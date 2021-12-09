@@ -49,7 +49,7 @@ Finally, to find the differential kinematics, we can multiply the Jacobian by th
 ![image](https://user-images.githubusercontent.com/95330513/145294523-a807f719-b586-40c7-a72f-a22daf311696.png)
 
 ## Simulation
-### Scene Setup
+### Scene Setup (Alternatively open and use attached "Diff_Kin_Scene2" file in Coppeliasim)
 To set up Coppeliasim, first open the program and it will create a new scene to work in. Then you can choose the Niryo_One robotic manipulator from the list of non-mobile robots on the left-hand side. Drag the robot and place it in any location in the scene. 
 
 Next, make sure all of the joints (labelled "NiryoOneJoint#") are not control loop enabled, and the motors are locked when the target velocity is 0. To do this, click the plus icon next to the "NiryoOne" object handle in the Scene hierarchy. This will drop down the list of the compontents which combine to form the entire robot manipulator. 
@@ -79,7 +79,7 @@ Double click on the script icon that is now next to "NiryoOneJoint1" in the scen
 Now that the above steps are completed, the simulation is ready to be ran with the github code on this page
 
 ## Explanation of Code Structure
-The code is split into several sections as follows:
+The code "MySim.py" is split into several sections as follows:
 
 - Several lines are dedicated to importing packages for use in the code which will allow commands to be sent to Coppeliasim. (Lines 17 and 18)
 - Next, the code connects to the remote API server for Coppeliasim using the client ID from the code added to the simulation's script file (Lines 21-25). The IPython console will output the text "program started" and "Connected to remote API server" if Python has successfully connected to Coppeliasim. 
