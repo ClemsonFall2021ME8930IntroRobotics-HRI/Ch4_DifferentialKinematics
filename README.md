@@ -10,7 +10,7 @@ Approximate the differential kinematics of the Niryo_One robotic manipulator in 
 
 ![image](https://user-images.githubusercontent.com/95330513/145285885-e8007800-17c9-4e74-ae6c-3a723d8de2ab.png)
 
-Shown above is a simplified representation of the Niryo_One manipulator where only the world frame (frame 0), the end-effector frame (frame 7), and the frames of joints 2, 3, and 4 from Coppeliasim are shown. These joints were chosen to simplify the example and calcuations, so that the results could be easily compared and simpler to troubleshoot. Note that all joints in the simulation and in the model are revolute joints. Therefore, the geometric Jacobian entry for each joint is found as follows:
+Shown above is a simplified representation of the Niryo_One manipulator where only the world frame (frame 0), the end-effector frame (frame 7), and the frames of joints 2, 3, and 4 from Coppeliasim are shown. In the simultaion, the velolcities of joints 1, 5, and 6, are kept at 0, and therefore, they can be considered rigid. These joints were chosen to simplify the example and calcuations, so that the results could be easily compared and simpler to troubleshoot. Note that all joints in the simulation and in the model are revolute joints. Therefore, the geometric Jacobian entry for each joint is found as follows:
 
   ![image169](https://user-images.githubusercontent.com/95330513/145286636-e9938530-f0c1-4f3f-ae65-17d74f402aa5.png)      
   
