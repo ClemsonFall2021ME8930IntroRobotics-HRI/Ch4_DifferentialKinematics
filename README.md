@@ -78,6 +78,8 @@ The code "MySim.py" is split into several sections as follows:
 
 ## Results
 
+The attached excel file shows the results of running the simulation for different amounts of time before calcuating and gathering the velocities. The angular velocities are very comparable, but the linear velocities are a bit off. They do however have similar slopes.
+
 Note that most of the results for linear velocity are off by about 1mm/s. This is not terrible considering the dynamics of the model are not taken into consideration so each joint in the model is not moving at the exact input velocity of the joints. Also, there is a time gap between the Jacobian being calculated and the Coppeliasim getting the velocites with the single command. During this time, the simulator moves slightly meaning there are errors in position, orientation, and float parameter velocities. 
 
 This is why using a simulation such as Coppeliasim is very useful when modelling robotic manipulators. Their results will most likely relate more closely to what an actual robot would do, how it would move, and how fast it sould go based on input torques, orienations, etc. However, if the program being used does not have such as command to get the velocities, it is possible to get fairly similar results with other information as was done in the derivation of the Jacobian in this code. 
