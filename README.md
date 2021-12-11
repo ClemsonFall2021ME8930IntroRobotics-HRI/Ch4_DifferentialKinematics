@@ -8,45 +8,28 @@ Approximate the differential kinematics of the Niryo_One robotic manipulator in 
 - Package commands in Python: https://www.coppeliarobotics.com/helpFiles/en/remoteApiFunctionsPython.htm
 ## Solution to Approximation
 
-![image](https://user-images.githubusercontent.com/95330513/145285885-e8007800-17c9-4e74-ae6c-3a723d8de2ab.png)
+Note that the code attached in the gethub will do these calculations for us using the manipulator's current joint and end-effector positions and orientations. 
 
-Shown above is a simplified representation of the Niryo_One manipulator where only the world frame (frame 0), the end-effector frame (frame 7), and the frames of joints 2, 3, and 4 from Coppeliasim are shown. In the simultaion, the velolcities of joints 1, 5, and 6, are kept at 0, and therefore, they can be considered rigid. These joints were chosen to simplify the example and calcuations, so that the results could be easily compared and simpler to troubleshoot. Note that all joints in the simulation and in the model are revolute joints. Therefore, the geometric Jacobian entry for each joint is found as follows:
+In the simultaion, only joints 2, 3, and 4 are given velocity values. The velolcities of joints 1, 5, and 6, are kept at zero, and therefore, they can be considered rigid. These joints were chosen to be rigid in order to simplify the example and calcuations, and so that the results could be easily compared and simpler to troubleshoot. Note that all joints in the simulation are revolute joints. Therefore, the geometric Jacobian entry for each joint is found as follows:
 
   ![image169](https://user-images.githubusercontent.com/95330513/145286636-e9938530-f0c1-4f3f-ae65-17d74f402aa5.png)      
   
   ![image157](https://user-images.githubusercontent.com/95330513/145286529-5d3e6ec4-e7fe-4384-b53d-754552eca6a9.png)
 
-While the orientation of the manipulator joints is approximated using the diagram above, the position of each joint with respect to the world frame (![image](https://user-images.githubusercontent.com/95330513/145287126-0ee31e31-d637-47d0-8e4e-658379b1202b.png)
-) is found using the simulation. The ouput of these positions have the handles "Joint_Position_#" respectively in the Python coding. The position of the end-effector with respect to the world frame is also needed and its handle in the Python code is "EndEffector_Position"
+The position and orientation of each joint with respect to the world frame is found using the simulation and python code. The ouput of the positions and orientations have the handles "Joint_Position_#" and "Joint_orientation_#" respectively in the Python coding. The position of the end-effector with respect to the world frame is also needed and its handle in the Python code is "EndEffector_Position"
 
-These positions are needed directly from the code because the orientation of the world frame in Coppeliasim may not be aligned with the world frame of the robotic manipulator. Also, the output of the velocities found using the simulation will be with respect to the world frame of Coppeliasim. The following position vectors represent each of the positions:
-
-![image](https://user-images.githubusercontent.com/95330513/145290590-1a74bcb3-f9e9-4102-948c-6497526ec635.png)
+These positions values are needed directly from the code because the orientation and position of the world frame in Coppeliasim may not be aligned with the world frame of the robotic manipulator itself. Also, the output of the velocities found using the simulation will be with respect to the world frame of Coppeliasim.
 
 Once the positions are known, ![image](https://user-images.githubusercontent.com/95330513/145290458-a6199ff8-583d-40b3-8322-887f1e01b605.png)
-can be calculated by simply subtracting the corresponding joint positions from the end effector's position. This gives the following results:
+can be calculated by simply subtracting the corresponding joint positions from the end effector's position. 
 
-![image](https://user-images.githubusercontent.com/95330513/145290655-6f98bbec-5c75-45fe-a710-c824b8ed4d13.png)
+Next, we can use the orientations of the joint frames to get rotation matrices for them and thus get the z-orientation of each joint with respect to the world frame by multiplying the rotation matrix by the transpose of [0,0,1]. Note that the result represents the bottom half of each link's respective parts of the geometric Jacobian.
 
-Next, we can use the diagram to get an opproximation of the final orientation of the manipulator. Alternatively, one could use the Python code to get the orienations as well, doing so will lead to even more accurate results. Finding the orientation of each joint with respect to the world frame is fairly simple from the diagram as all of the links are either in line with each other or in a perpendicular orientation. For finding the geometric Jacobian of this simple model, we only need the z-orientation of each joint with respect to the world frame. In this diagram, those vecotors represent the orienation of the current z-axes with respect to the world frame
+The last step to finding the inputs of the rest of the Jacobian (the top half) is to take the cross product of the z-orientation and the difference between the position of the end-effector and joints:
 
-- For joint #2, the current z-axis is aligned with the world frame's positive x-axis, therefore: ![image](https://user-images.githubusercontent.com/95330513/145291633-c9b58426-837b-4fe6-a41b-07b1f223d9a0.png)
+![image169](https://user-images.githubusercontent.com/95330513/145292103-231dfd74-501b-40c4-a63a-9bfd1d5d907b.png) 
 
-- For joint #3, the current z-axis is aligned with the world frame's positive x-axis, therefore: ![image](https://user-images.githubusercontent.com/95330513/145291737-1d67426e-27ca-484b-892c-4873a094ef04.png)
-
-- For joint #4, the current z-axis is aligned with the world frame's positive y-axis, therefore: ![image](https://user-images.githubusercontent.com/95330513/145291822-3bce1a13-fc1d-4780-86ea-edf521739311.png)
-
-Note that these values are equivalent to the bottom 3 values of each column of the final geometric Jacobian matrix. Therefore, the last step to finding the inputs of the rest of the Jacobian is to take the cross product: ![image169](https://user-images.githubusercontent.com/95330513/145292103-231dfd74-501b-40c4-a63a-9bfd1d5d907b.png) The results are as follows:
-
-![image](https://user-images.githubusercontent.com/95330513/145292836-e4853b69-0ec4-4620-8b9b-8db0e71f051f.png)
-
-Finally, we can combine all of the values to get the final geometric Jacobian:
-
-![image](https://user-images.githubusercontent.com/95330513/145293575-ea59948a-deef-4cd3-b517-d2abf4e598c3.png)
-
-Finally, to find the differential kinematics, we can multiply the Jacobian by the input velocities for each of the joints in the simulation. The input angular velocties of the joints in the Python coding are 0.04 rad/s for joints 2 and 3, and 0.05 rad/s for link joint 4. Multiplying by the approximated geometric Jacobian gives the following as our final results for the approximation:
-
-![image](https://user-images.githubusercontent.com/95330513/145294523-a807f719-b586-40c7-a72f-a22daf311696.png)
+Finally, to find the differential kinematics, we can multiply the Jacobian by the velocities for each of the joints in the simulation. These velocities are also found in the python coding and noted together as the vector "Velocity_Tot". This final calculation will give the results for the derived linear and angular velocities of the system or "Derived_V" in the code. 
 
 ## Simulation
 ### Scene Setup (Alternatively open and use attached "Diff_Kin_Scene2" file in Coppeliasim)
@@ -81,29 +64,23 @@ Now that the above steps are completed, the simulation is ready to be ran with t
 ## Explanation of Code Structure
 The code "MySim.py" is split into several sections as follows:
 
-- Several lines are dedicated to importing packages for use in the code which will allow commands to be sent to Coppeliasim. (Lines 17 and 18)
-- Next, the code connects to the remote API server for Coppeliasim using the client ID from the code added to the simulation's script file (Lines 21-25). The IPython console will output the text "program started" and "Connected to remote API server" if Python has successfully connected to Coppeliasim. 
-- The code then assigns variable names to the handles from Coppeliasim's scene hierarchy. This allows the rest of the code to reference the Coppeliasim components using those defined variable names. This is done for all of the joints of the manipulator as well as the EndEffector dummy that was added. (Lines 27-36)
-- Now that these components can be referenced throughout the code, we can assign a velocity to them using the "sim.simxSetJointTargetVelocity" function. This function sets the joints target angular velocity. Note that because the manipulator is dynamically modeled, it may not reach the exact velocities which were input. Also, note that in the code, the first target velocities of the joints are set to -0.04, -0.04, and -0.05 respectively. (Lines 40-42) 
-- Next, the code pauses for 1 second while the manipulator is moving. The velocities of the joints are then set back to 0. 
-- The code pauses for another 0.5 sec, and then the velcities are set to 0.04, 0.04, and 0.05 respectively for 0.87 seconds. This is don so that the robot will move approximately back to its starting position with apporximately the same initial orientation as the diagram used to solve for the geometric Jacobian previously. 
-- After 0.87 sec, the code finds the position of joints 2, 3, and 4, and the end-effector to be used in the Jacobian calculation. 
-- The code also finds the absolute linear and angular velocities of the end-effector and outputs them as "linearV" and "angularV" respectively. This is the results we will compare to the hand-derived differential kinematics previously calculated. 
-- Finally, the code sets all of the joints' velocities back to 0, ending the simulation. 
+- Several lines are dedicated to importing packages for use in the code which will allow commands to be sent to Coppeliasim. (Lines 17-27)
+- Next, the code connects to the remote API server for Coppeliasim using the client ID from the code added to the simulation's script file (Lines 30-35). The IPython console will output the text "program started" and "Connected to remote API server" if Python has successfully connected to Coppeliasim. 
+- The code then assigns variable names to the handles from Coppeliasim's scene hierarchy. This allows the rest of the code to reference the Coppeliasim components using those defined variable names. This is done for all of the joints of the manipulator as well as the EndEffector dummy that was added. (Lines 37-46)
+- Now that these components can be referenced throughout the code, we can assign a velocity to them using the "sim.simxSetJointTargetVelocity" function. This function sets the joints target angular velocity. Note that because the manipulator is dynamically modeled, it may not reach the exact velocities which were input. Also, note that in the code, the target velocities of the joints are set to -0.04, -0.04, and -0.05 respectively. (Lines 48-51) 
+- Next, the code pauses for 0.3 second while the manipulator is moving.
+- To begin calculating the Jacobian, the code gets the joint and end-effector's positons ("Joint_Position_#") (lines 56-59) and the joints' rotation matrices ("Rig_#") (lines 61-72)
+- The code gats the z-orientation for each of the joints by multiplying Rig_# by the transpose of [0,0,1] (lines 77-79) which will be the bottom half of the Jacobian ("Rig_#_z"), and then finds the top half of the Jacobian by taking the cross product of the z-orienations with the difference in position of the joints and end-effector (lines 82-84)
+- The joint float parameter velocities are gathered and formed into one vector named "Velocity_Tot". (Lines 87-90)
+- The code combines all values into a single Jacobian matrix and takes the transpose of it to make sure it can be multiplied by the velocities. Then it finds the "Derived_V" by conducting the matrix multiplication. (Lines 93-95)
+- Line 98 gets Coppeliasim's value for the linear and angular velocity at that time
+- Lines 101 to 106 stop the simulation by setting all velocities to zero. 
 
 ## Results
 
-When ran, the simulation outputs the following vector of velocities:
+Note that most of the results for linear velocity are off by about 1mm/s. This is not terrible considering the dynamics of the model are not taken into consideration so each joint in the model is not moving at the exact input velocity of the joints. Also, there is a time gap between the Jacobian being calculated and the Coppeliasim getting the velocites with the single command. During this time, the simulator moves slightly meaning there are errors in position, orientation, and float parameter velocities. 
 
-![image](https://user-images.githubusercontent.com/95330513/145311751-3da8a687-9c44-44c3-bd5d-6bf4106e00da.png)
-
-Comparing to the approximated velocities we have the following error for each:
-
-![image](https://user-images.githubusercontent.com/95330513/145312114-3fa9fc29-0a62-431e-9a28-f72659d382fa.png)
-
-Note that most of the results have errors between 3% and 15%. This is not terrible considering all of the factors that were not considered while deriving the results by hand. The dynamics of the model are not taken into consideration so each joint in the model is not moving at the exact input velocity of the joints. Also, as can be clearly viewed in the simulation, the manipulator does not go back to the exact position it started in, therefore there is error in the approximated ![image149](https://user-images.githubusercontent.com/95330513/145312429-3cc69739-ea56-453b-84b0-cbf3f7db9437.png). 
-
-This is why using a simulation such as Coppeliasim is very useful when modelling robotic manipulators. Their results will most likely relate more closely to what an actual robot would do, how it would move, and how fast it sould go based on input torques, orienations, etc. Now, we could get better derived results if we had used more information from the simulation such as the orientation of the joints at the time of measuring the velocity, or finding the exact velocity of each of the joints at that time as well. However, without a program designed to understand the dynamics of the robot, we have to make some approximations as was done in this example. 
+This is why using a simulation such as Coppeliasim is very useful when modelling robotic manipulators. Their results will most likely relate more closely to what an actual robot would do, how it would move, and how fast it sould go based on input torques, orienations, etc. However, if the program being used does not have such as command to get the velocities, it is possible to get fairly similar results with other information as was done in the derivation of the Jacobian in this code. 
 
 
 
