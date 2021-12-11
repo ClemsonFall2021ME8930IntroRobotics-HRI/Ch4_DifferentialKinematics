@@ -1,6 +1,6 @@
 # Ch4_DifferentialKinematics
 ## Problem Statement
-Approximate the differential kinematics of the Niryo_One robotic manipulator in a specific orientation using the geometric Jacobian. Create a simulation of the Niryo_One manipulator with the same input target angular velocities of its revolute links. Use Python to get the differential kinematics of the end effector and compare them to the approximation made previously. 
+Approximate the differential kinematics of the Niryo_One robotic manipulator using the python coding to derive the geometric Jacobian and velocity of the end-effector. Create a simulation of the Niryo_One manipulator with the same input target angular velocities of its revolute links. Use Python to get the differential kinematics of the end effector and compare them to the derived approximation. 
 ## Pre-Requisites
 - Software: Coppeliasim (for simulating the pre-made Niryo_One robotic manipulator), Spyder (for Python coding)
 - Mathematica/MATLAB recommended (for calculating the geometric Jacobian)
